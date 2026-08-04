@@ -1,7 +1,7 @@
 // One-off script: copies source photos from "slike/<folder>/<n>/Untitled.*"
 // into src/assets/apartments/<slug>/<NN>.<ext> with clean sequential names.
 // Run with: node scripts/organize-images.mjs
-import { readdirSync, statSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
+import { readdirSync, statSync, mkdirSync, copyFileSync, existsSync, rmSync } from "node:fs";
 import { join, extname } from "node:path";
 
 const ROOT = decodeURIComponent(new URL("..", import.meta.url).pathname).replace(/^\/([A-Za-z]):/, "$1:");
@@ -18,6 +18,9 @@ const MAP = [
 for (const { src, slug } of MAP) {
   const srcDir = join(ROOT, src);
   const outDir = join(ROOT, "src", "assets", "apartments", slug);
+  // Clear the destination first so a folder whose file extension changed (e.g. a
+  // .jpg replaced by a .png) doesn't leave a stale duplicate behind.
+  if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
 
   const numberedFolders = readdirSync(srcDir)

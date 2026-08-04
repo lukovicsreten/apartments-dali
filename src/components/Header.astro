@@ -3,6 +3,7 @@ import { LOCALES, LOCALE_LABELS, type Locale } from '../i18n/locales';
 import { localePath, switchLocalePath, useTranslations } from '../i18n/utils';
 import { SITE } from '../data/site';
 import Icon from './Icon.astro';
+import Logo from './Logo.astro';
 
 interface Props {
   locale: Locale;
@@ -15,7 +16,7 @@ const pathname = Astro.url.pathname;
 <header class="site-header">
   <div class="container bar">
     <a href={localePath(locale)} class="brand">
-      <span class="brand-mark">AD</span>
+      <Logo />
       <span class="brand-name">{t('site.name')}</span>
     </a>
 
@@ -78,20 +79,6 @@ const pathname = Astro.url.pathname;
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--color-ink);
-  }
-
-  .brand-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 50%;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 0.85rem;
-    font-family: var(--font-body);
-    letter-spacing: 0.02em;
   }
 
   .menu-toggle {

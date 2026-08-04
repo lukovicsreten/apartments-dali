@@ -1,0 +1,46 @@
+---
+// Brand mark: orange circle with a white "A", paired with a standalone orange "D" —
+// matches the logo artwork supplied by the client.
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props as Props;
+---
+
+<svg
+  class={`logo-mark ${className}`}
+  viewBox="0 0 300 190"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Apartments Dali"
+>
+  <circle cx="95" cy="95" r="90" fill="#EA7A3C" />
+  <text
+    x="95"
+    y="95"
+    fill="#ffffff"
+    font-family="'Arial Black', Arial, Helvetica, sans-serif"
+    font-weight="900"
+    font-size="112"
+    text-anchor="middle"
+    dominant-baseline="central"
+  >A</text>
+  <text
+    x="245"
+    y="95"
+    fill="#EA7A3C"
+    font-family="'Arial Black', Arial, Helvetica, sans-serif"
+    font-weight="900"
+    font-size="122"
+    text-anchor="middle"
+    dominant-baseline="central"
+  >D</text>
+</svg>
+
+<style>
+  .logo-mark {
+    display: block;
+    height: 2.2rem;
+    width: auto;
+  }
+</style>

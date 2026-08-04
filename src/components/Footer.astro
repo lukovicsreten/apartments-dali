@@ -3,6 +3,7 @@ import { localePath, useTranslations } from '../i18n/utils';
 import { SITE } from '../data/site';
 import type { Locale } from '../i18n/locales';
 import Icon from './Icon.astro';
+import Logo from './Logo.astro';
 
 interface Props {
   locale: Locale;
@@ -15,7 +16,10 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <span class="brand-name">{t('site.name')}</span>
+      <div class="footer-brand-mark">
+        <Logo />
+        <span class="brand-name">{t('site.name')}</span>
+      </div>
       <p>{t('footer.tagline')}</p>
     </div>
 
@@ -48,6 +52,12 @@ const year = new Date().getFullYear();
     display: grid;
     gap: 2.5rem;
     grid-template-columns: 1fr;
+  }
+
+  .footer-brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
   }
 
   .footer-brand .brand-name {
