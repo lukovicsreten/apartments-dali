@@ -53,6 +53,7 @@ export const FEATURES = {
   iron: { icon: 'iron', sr: 'Pegla i pribor za peglanje', en: 'Iron and ironing equipment', de: 'Bügeleisen und -brett' },
   seatingArea: { icon: 'sofa', sr: 'Prostor za sedenje', en: 'Seating area', de: 'Sitzecke' },
   desk: { icon: 'desk', sr: 'Radni sto', en: 'Desk', de: 'Schreibtisch' },
+  freeParking: { icon: 'parking', sr: 'Besplatno parking mesto', en: 'Free parking space', de: 'Kostenloser Parkplatz' },
   extraLongBeds: { icon: 'bed', sr: 'Ekstra dugački kreveti (>2m)', en: 'Extra-long beds (over 2 metres)', de: 'Extra lange Betten (über 2 m)' },
   heating: { icon: 'flame', sr: 'Grejanje', en: 'Heating', de: 'Heizung' },
   privateEntrance: { icon: 'door', sr: 'Sopstveni ulaz', en: 'Private entrance', de: 'Privater Eingang' },
