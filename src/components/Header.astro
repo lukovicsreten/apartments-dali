@@ -1,0 +1,231 @@
+---
+import { LOCALES, LOCALE_LABELS, type Locale } from '../i18n/locales';
+import { localePath, switchLocalePath, useTranslations } from '../i18n/utils';
+import { SITE } from '../data/site';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props as Props;
+const t = useTranslations(locale);
+const pathname = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a href={localePath(locale)} class="brand">
+      <span class="brand-mark">AD</span>
+      <span class="brand-name">{t('site.name')}</span>
+    </a>
+
+    <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="primary-nav">
+      <Icon name="menu" />
+      <span class="visually-hidden">Menu</span>
+    </button>
+
+    <nav class="primary-nav" id="primary-nav">
+      <a href={localePath(locale)}>{t('nav.home')}</a>
+      <a href={localePath(locale, 'apartments')}>{t('nav.apartments')}</a>
+      <a href={localePath(locale, 'contact')}>{t('nav.contact')}</a>
+
+      <div class="nav-actions">
+        <a class="icon-link" href={SITE.telHref} aria-label={t('nav.call')}>
+          <Icon name="phone" />
+        </a>
+        <a class="icon-link" href={SITE.whatsappHref} target="_blank" rel="noopener" aria-label={t('nav.whatsapp')}>
+          <Icon name="whatsapp" />
+        </a>
+        <div class="lang-switch" role="group" aria-label="Language">
+          {LOCALES.map((l) => (
+            <a
+              href={switchLocalePath(pathname, l)}
+              class:list={['lang-link', { active: l === locale }]}
+              aria-current={l === locale ? 'true' : undefined}
+            >
+              {LOCALE_LABELS[l]}
+            </a>
+          ))}
+        </div>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(250, 246, 240, 0.92);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.9rem;
+    gap: 1rem;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    letter-spacing: 0.02em;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .primary-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+
+  .primary-nav > a {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-ink-soft);
+    transition: color 0.15s ease;
+  }
+
+  .primary-nav > a:hover {
+    color: var(--color-primary);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .icon-link {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--color-bg-alt);
+    color: var(--color-ink);
+  }
+
+  .icon-link:hover {
+    background: var(--color-primary-tint);
+    color: var(--color-primary-dark);
+  }
+
+  .lang-switch {
+    display: flex;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .lang-link {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-soft);
+  }
+
+  .lang-link.active {
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  @media (min-width: 900px) {
+    .icon-link {
+      display: inline-flex;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .menu-toggle {
+      display: inline-flex;
+    }
+
+    .primary-nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0.5rem 1.5rem 1.25rem;
+      display: none;
+      box-shadow: var(--shadow-md);
+    }
+
+    .primary-nav.open {
+      display: flex;
+    }
+
+    .primary-nav > a {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .nav-actions {
+      padding-top: 1rem;
+      justify-content: space-between;
+    }
+
+    .icon-link {
+      display: inline-flex;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .menu-toggle {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const nav = document.getElementById('primary-nav');
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+  });
+  nav?.querySelectorAll('a').forEach((a) =>
+    a.addEventListener('click', () => {
+      nav.classList.remove('open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    })
+  );
+</script>

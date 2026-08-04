@@ -1,0 +1,291 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+
+interface Props {
+  images: ImageMetadata[];
+  alt: string;
+  label: string;
+}
+const { images, alt, label } = Astro.props as Props;
+
+// Precompute one optimized full-size WebP rendition per photo for the lightbox.
+// These aren't rendered as <img> tags up front, so nothing is fetched until a
+// visitor actually opens the lightbox.
+const fullImages = await Promise.all(
+  images.map((img) => getImage({ src: img, width: 1920, format: 'webp', quality: 78 }))
+);
+const galleryData = fullImages.map((full, i) => ({
+  src: full.src,
+  width: full.attributes.width,
+  height: full.attributes.height,
+  alt: `${alt} — ${i + 1}/${images.length}`,
+}));
+---
+
+<div class="gallery" data-gallery>
+  <script type="application/json" set:html={JSON.stringify(galleryData)} data-gallery-json />
+
+  <div class="gallery-grid">
+    {images.map((img, i) => (
+      <button type="button" class:list={['thumb', { hero: i === 0 }]} data-index={i} aria-label={`${label} ${i + 1}/${images.length}`}>
+        <Image
+          src={img}
+          alt={`${alt} — ${i + 1}/${images.length}`}
+          width={i === 0 ? 900 : 460}
+          height={i === 0 ? 620 : 320}
+          widths={i === 0 ? [480, 720, 900] : [230, 340, 460]}
+          sizes={i === 0 ? '(min-width: 900px) 620px, 92vw' : '(min-width: 900px) 300px, 45vw'}
+          format="webp"
+          quality={72}
+          loading={i < 3 ? 'eager' : 'lazy'}
+        />
+        {i === 4 && images.length > 5 && <span class="more-badge">+{images.length - 5}</span>}
+      </button>
+    ))}
+  </div>
+
+  <div class="lightbox" data-lightbox hidden>
+    <button type="button" class="lb-close" data-lb-close aria-label="Close">
+      <Icon name="close" />
+    </button>
+    <button type="button" class="lb-nav lb-prev" data-lb-prev aria-label="Previous">
+      <Icon name="chevronLeft" />
+    </button>
+    <figure class="lb-figure">
+      <img data-lb-img alt="" />
+      <figcaption class="lb-counter" data-lb-counter></figcaption>
+    </figure>
+    <button type="button" class="lb-nav lb-next" data-lb-next aria-label="Next">
+      <Icon name="chevronRight" />
+    </button>
+  </div>
+</div>
+
+<style>
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 130px;
+    gap: 0.6rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .thumb {
+    position: relative;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    background: var(--color-bg-alt);
+    overflow: hidden;
+    display: block;
+  }
+
+  .thumb :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+
+  .thumb:hover :global(img) {
+    transform: scale(1.05);
+  }
+
+  .thumb.hero {
+    grid-column: span 2;
+    grid-row: span 4;
+  }
+
+  .thumb:not(.hero) {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  @media (min-width: 700px) {
+    .thumb:not(.hero) {
+      grid-column: span 1;
+    }
+  }
+
+  .more-badge {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 16, 12, 0.55);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(15, 12, 10, 0.94);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: pan-y;
+  }
+
+  .lightbox[hidden] {
+    display: none;
+  }
+
+  .lb-figure {
+    margin: 0;
+    max-width: min(92vw, 1200px);
+    max-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .lb-figure img {
+    max-width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    user-select: none;
+  }
+
+  .lb-counter {
+    color: #e9e1d3;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+  }
+
+  .lb-close,
+  .lb-nav {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #fff;
+    border-radius: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .lb-close:hover,
+  .lb-nav:hover {
+    background: rgba(255, 255, 255, 0.24);
+  }
+
+  .lb-close {
+    top: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .lb-prev {
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lb-next {
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 600px) {
+    .gallery-grid {
+      grid-auto-rows: 100px;
+    }
+  }
+</style>
+
+<script>
+  function initGalleries() {
+    document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+      if (root.dataset.galleryInit) return;
+      root.dataset.galleryInit = 'true';
+
+      const jsonEl = root.querySelector('[data-gallery-json]');
+      const data: { src: string; width: number; height: number; alt: string }[] = JSON.parse(
+        jsonEl?.textContent || '[]'
+      );
+
+      const lightbox = root.querySelector<HTMLElement>('[data-lightbox]');
+      const imgEl = root.querySelector<HTMLImageElement>('[data-lb-img]');
+      const counterEl = root.querySelector<HTMLElement>('[data-lb-counter]');
+      const thumbs = Array.from(root.querySelectorAll<HTMLButtonElement>('.thumb'));
+      if (!lightbox || !imgEl || !counterEl) return;
+
+      let current = 0;
+
+      function render() {
+        const item = data[current];
+        if (!item || !imgEl || !counterEl) return;
+        imgEl.src = item.src;
+        imgEl.width = item.width;
+        imgEl.height = item.height;
+        imgEl.alt = item.alt;
+        counterEl.textContent = `${current + 1} / ${data.length}`;
+      }
+
+      function open(index: number) {
+        current = index;
+        render();
+        lightbox!.hidden = false;
+        document.body.style.overflow = 'hidden';
+      }
+
+      function close() {
+        lightbox!.hidden = true;
+        document.body.style.overflow = '';
+      }
+
+      function next() {
+        current = (current + 1) % data.length;
+        render();
+      }
+
+      function prev() {
+        current = (current - 1 + data.length) % data.length;
+        render();
+      }
+
+      thumbs.forEach((btn) => {
+        btn.addEventListener('click', () => open(Number(btn.dataset.index)));
+      });
+
+      root.querySelector('[data-lb-close]')?.addEventListener('click', close);
+      root.querySelector('[data-lb-next]')?.addEventListener('click', next);
+      root.querySelector('[data-lb-prev]')?.addEventListener('click', prev);
+
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) close();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (lightbox!.hidden) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowRight') next();
+        if (e.key === 'ArrowLeft') prev();
+      });
+
+      // Swipe support for mobile.
+      let touchStartX = 0;
+      lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+      }, { passive: true });
+      lightbox.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 40) (dx < 0 ? next : prev)();
+      }, { passive: true });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initGalleries);
+  initGalleries();
+</script>

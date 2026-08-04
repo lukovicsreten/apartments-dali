@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://apartmentsdali.com/sitemap-index.xml

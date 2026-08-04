@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MapEmbed from '../../components/MapEmbed.astro';
+import Icon from '../../components/Icon.astro';
+import { LOCALES, type Locale } from '../../i18n/locales';
+import { useTranslations } from '../../i18n/utils';
+import { SITE } from '../../data/site';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale }, props: { locale } }));
+}
+
+const { locale } = Astro.props as { locale: Locale };
+const t = useTranslations(locale);
+
+const namePlaceholder: Record<Locale, string> = {
+  sr: 'Marko Marković',
+  en: 'Jane Smith',
+  de: 'Max Mustermann',
+};
+---
+
+<BaseLayout
+  locale={locale}
+  title={t('contact.title')}
+  description={t('contact.subtitle')}
+  path={['contact']}
+>
+  <section class="section contact-section">
+    <div class="container contact-grid">
+      <div>
+        <p class="eyebrow">{t('site.name')}</p>
+        <h1>{t('contact.title')}</h1>
+        <p>{t('contact.subtitle')}</p>
+
+        <ul class="contact-info">
+          <li>
+            <Icon name="phone" />
+            <div>
+              <strong>{t('contact.phone')}</strong>
+              <a href={SITE.telHref}>{SITE.phoneDisplay}</a>
+            </div>
+          </li>
+          <li>
+            <Icon name="whatsapp" />
+            <div>
+              <strong>WhatsApp</strong>
+              <a href={SITE.whatsappHref} target="_blank" rel="noopener">{SITE.phoneDisplay}</a>
+            </div>
+          </li>
+          <li>
+            <Icon name="mapPin" />
+            <div>
+              <strong>{t('contact.location')}</strong>
+              <a href={SITE.mapsShareUrl} target="_blank" rel="noopener">{t('map.openInMaps')}</a>
+            </div>
+          </li>
+        </ul>
+
+        <div class="quick-actions">
+          <a class="btn btn-primary" href={SITE.telHref}><Icon name="phone" /> {t('nav.call')}</a>
+          <a class="btn btn-accent" href={SITE.whatsappHref} target="_blank" rel="noopener"><Icon name="whatsapp" /> {t('nav.whatsapp')}</a>
+        </div>
+      </div>
+
+      <form class="contact-form" id="contact-form">
+        <h2>{t('contact.formTitle')}</h2>
+        <label>
+          {t('contact.form.name')}
+          <input type="text" name="name" placeholder={namePlaceholder[locale]} required />
+        </label>
+        <label>
+          {t('contact.form.email')}
+          <input type="email" name="email" placeholder="name@example.com" />
+        </label>
+        <label>
+          {t('contact.form.message')}
+          <textarea name="message" rows="5" required></textarea>
+        </label>
+        <button type="submit" class="btn btn-primary">
+          <Icon name="whatsapp" /> {t('contact.form.submit')}
+        </button>
+        <p class="form-note">{t('contact.form.note')}</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="section section-bg-alt">
+    <div class="container">
+      <div class="section-head">
+        <h2>{t('map.title')}</h2>
+        <p>{t('map.body')}</p>
+      </div>
+      <MapEmbed title={t('map.title')} height={460} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    margin: 1.75rem 0;
+  }
+
+  .contact-info li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+
+  .contact-info :global(svg) {
+    color: var(--color-primary);
+    margin-top: 0.15rem;
+  }
+
+  .contact-info strong {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-ink-soft);
+    font-weight: 600;
+  }
+
+  .contact-info a {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .contact-info a:hover {
+    color: var(--color-primary);
+  }
+
+  .quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+
+  .contact-form {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .contact-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    font: inherit;
+    padding: 0.7rem 0.85rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-ink);
+    resize: vertical;
+  }
+
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+
+  .contact-form button {
+    justify-content: center;
+  }
+
+  .form-note {
+    font-size: 0.78rem;
+    color: var(--color-ink-faint);
+    margin: 0;
+  }
+
+  @media (min-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+
+<script define:vars={{ whatsappBase: SITE.whatsappHref }}>
+  const form = document.getElementById('contact-form');
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = (data.get('name') || '').toString().trim();
+    const email = (data.get('email') || '').toString().trim();
+    const message = (data.get('message') || '').toString().trim();
+
+    const lines = [name ? `${name}` : null, message, email ? `(${email})` : null].filter(Boolean);
+    const text = encodeURIComponent(lines.join('\n'));
+    window.open(`${whatsappBase}?text=${text}`, '_blank', 'noopener');
+  });
+</script>

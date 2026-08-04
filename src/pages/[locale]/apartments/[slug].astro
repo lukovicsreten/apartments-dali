@@ -1,0 +1,291 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Gallery from '../../../components/Gallery.astro';
+import ApartmentCard from '../../../components/ApartmentCard.astro';
+import Icon from '../../../components/Icon.astro';
+import { LOCALES, type Locale } from '../../../i18n/locales';
+import { useTranslations, localePath } from '../../../i18n/utils';
+import { APARTMENTS, type Apartment } from '../../../data/apartments';
+import { getApartmentImages } from '../../../data/images';
+import { FEATURES, VIEWS, type FeatureCategory } from '../../../data/features';
+import { SITE, whatsappHrefWithMessage } from '../../../data/site';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) =>
+    APARTMENTS.map((apartment) => ({
+      params: { locale, slug: apartment.slug },
+      props: { locale, apartment },
+    }))
+  );
+}
+
+const { locale, apartment } = Astro.props as { locale: Locale; apartment: Apartment };
+const t = useTranslations(locale);
+
+const images = getApartmentImages(apartment.slug);
+const otherApartments = APARTMENTS.filter((a) => a.slug !== apartment.slug).slice(0, 3);
+const guestsLabel = apartment.capacity === 1 ? t('apartments.guest_one') : t('apartments.guests');
+
+const categories: { key: FeatureCategory; icon: string }[] = [
+  { key: 'kitchen', icon: 'kitchen' },
+  { key: 'bathroom', icon: 'bathroom' },
+  { key: 'general', icon: 'general' },
+  { key: 'safety', icon: 'safety' },
+];
+
+const whatsappMessage: Record<Locale, string> = {
+  sr: `Zdravo! Zanima me rezervacija za "${apartment.name.sr}".`,
+  en: `Hi! I would like to ask about booking "${apartment.name.en}".`,
+  de: `Hallo! Ich interessiere mich für eine Buchung von "${apartment.name.de}".`,
+};
+---
+
+<BaseLayout
+  locale={locale}
+  title={apartment.name[locale]}
+  description={apartment.description[locale]}
+  path={['apartments', apartment.slug]}
+  image={images[0]}
+>
+  <nav class="crumbs container">
+    <a href={localePath(locale, 'apartments')}>
+      <Icon name="chevronLeft" /> {t('detail.backToApartments')}
+    </a>
+  </nav>
+
+  <section class="container gallery-section">
+    <Gallery images={images} alt={apartment.name[locale]} label={t('detail.gallery')} />
+  </section>
+
+  <section class="section detail-body">
+    <div class="container detail-grid">
+      <div class="detail-main">
+        <header class="detail-header">
+          {apartment.accessible && (
+            <span class="badge a11y-inline"><Icon name="accessible" /> {t('apartments.accessible')}</span>
+          )}
+          <h1>{apartment.name[locale]}</h1>
+          <ul class="stat-row">
+            <li><Icon name="users" /> {apartment.capacity} {guestsLabel}</li>
+            <li><Icon name="ruler" /> {apartment.sizeM2} m²</li>
+            <li><Icon name="bed" /> 1 {t('detail.bedroom')}</li>
+            <li><Icon name="bathroom" /> 1 {t('detail.bathroom')}</li>
+          </ul>
+          <ul class="view-row">
+            {apartment.views.map((v) => (
+              <li><Icon name={VIEWS[v].icon} /> {VIEWS[v][locale]}</li>
+            ))}
+          </ul>
+        </header>
+
+        <div class="prose">
+          <h2>{t('detail.description')}</h2>
+          <p>{apartment.description[locale]}</p>
+          <p class="children-note"><Icon name="crib" /> {apartment.childrenNote[locale]}</p>
+        </div>
+
+        <div class="amenities">
+          <h2>{t('detail.amenities')}</h2>
+          {categories.map(({ key, icon }) => (
+            apartment.amenities[key].length > 0 && (
+              <div class="amenity-group">
+                <h3><Icon name={icon} /> {t(`detail.category.${key}` as any)}</h3>
+                <ul class="amenity-list">
+                  {apartment.amenities[key].map((fKey) => (
+                    <li>
+                      <Icon name={FEATURES[fKey].icon} />
+                      <span>{FEATURES[fKey][locale]}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          ))}
+        </div>
+      </div>
+
+      <aside class="booking-card">
+        <h2>{t('detail.bookNow')}</h2>
+        <p>{t('contact.subtitle')}</p>
+        <a class="btn btn-primary" href={SITE.telHref}>
+          <Icon name="phone" /> {t('detail.callUs')}
+        </a>
+        <a class="btn btn-accent" href={whatsappHrefWithMessage(whatsappMessage[locale])} target="_blank" rel="noopener">
+          <Icon name="whatsapp" /> {t('detail.whatsappUs')}
+        </a>
+        <a class="btn btn-secondary" href={localePath(locale, 'contact')}>
+          <Icon name="mapPin" /> {t('nav.contact')}
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section section-bg-alt other-apartments">
+    <div class="container">
+      <div class="section-head">
+        <h2>{t('detail.otherApartments')}</h2>
+      </div>
+      <div class="others-grid">
+        {otherApartments.map((a) => (
+          <ApartmentCard apartment={a} locale={locale} />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    padding-top: 1.5rem;
+  }
+
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: 600;
+    color: var(--color-ink-soft);
+    font-size: 0.9rem;
+  }
+
+  .crumbs a:hover {
+    color: var(--color-primary);
+  }
+
+  .gallery-section {
+    padding-top: 1rem;
+  }
+
+  .detail-body {
+    padding-top: 2rem;
+  }
+
+  .detail-grid {
+    display: grid;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .a11y-inline {
+    margin-bottom: 0.75rem;
+  }
+
+  .stat-row,
+  .view-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .stat-row li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-bg-alt);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+  }
+
+  .view-row li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--color-accent-dark);
+    background: var(--color-accent-tint);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .prose {
+    margin-top: 2.5rem;
+  }
+
+  .children-note {
+    display: flex;
+    gap: 0.6rem;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    font-size: 0.9rem;
+    align-items: flex-start;
+  }
+
+  .children-note :global(svg) {
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+    color: var(--color-primary);
+  }
+
+  .amenities {
+    margin-top: 2.5rem;
+  }
+
+  .amenity-group {
+    margin-top: 1.75rem;
+  }
+
+  .amenity-group h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.05rem;
+    color: var(--color-primary-dark);
+    margin-bottom: 0.85rem;
+  }
+
+  .amenity-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.6rem 1.5rem;
+  }
+
+  .amenity-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+    padding-block: 0.15rem;
+  }
+
+  .amenity-list :global(svg) {
+    color: var(--color-accent-dark);
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+
+  .booking-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: sticky;
+    top: 6rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .booking-card .btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .others-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.75rem;
+  }
+
+  @media (min-width: 980px) {
+    .detail-grid {
+      grid-template-columns: 1fr 320px;
+    }
+  }
+</style>

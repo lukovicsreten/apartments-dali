@@ -1,0 +1,113 @@
+---
+// Small hand-drawn line-icon set (24x24, stroke-based) so the site ships zero icon-font/
+// icon-library JS or extra network requests. Unknown names fall back to a plain dot.
+interface Props {
+  name: string;
+  class?: string;
+}
+const { name, class: className = '' } = Astro.props as Props;
+
+const paths: Record<string, string> = {
+  // categories & nav
+  kitchen: '<path d="M4 3v9a3 3 0 0 0 3 3v6M4 3h2M7 3v6M10 3v6M10 3h1M14 21V9a4 4 0 1 1 4 4h-4"/>',
+  bathroom: '<path d="M4 12h16M6 12V6a2 2 0 0 1 2-2c1.5 0 2 1.2 2 2M5 12v6a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-6M9 21v1M15 21v1"/>',
+  view: '<circle cx="12" cy="12" r="3"/><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/>',
+  general: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/>',
+  safety: '<path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3Z"/><path d="m9.5 12 1.8 1.8L15 10"/>',
+  accessible: '<circle cx="12" cy="4.5" r="1.6"/><path d="M12 7v5l4 2m-4-2-3 2M9 20l3-6M15 20l-2-4"/>',
+  phone: '<path d="M5 4h3l1.5 4-2 1.5a12 12 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 3 6.2 2 2 0 0 1 5 4Z"/>',
+  whatsapp: '<path d="M7 17.5 4 20l2.6-3A8 8 0 1 1 10 19.3l-3 .7Z"/><path d="M8.5 9.3c.2-1 1-1 1.5-1s.9.4 1 .8c.2.6-.3 1.2-.1 1.8.4 1.2 2 2.7 3.1 3 .5.1 1-.4 1.6-.2.4.1.9.7.9 1.2 0 .8-1 1.4-1.8 1.4-2.6 0-6-3.4-6-6 0-.5.2-.7-.2-1Z" fill="currentColor" stroke="none"/>',
+  mapPin: '<path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-6-3.8-9S9.5 5.5 12 3Z"/>',
+  users: '<circle cx="9" cy="8" r="3"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 5.3a3 3 0 0 1 0 5.7M18.5 20a6 6 0 0 0-4-5.7"/>',
+  ruler: '<rect x="3" y="9" width="18" height="6" rx="1"/><path d="M7 9v2.5M11 9v2.5M15 9v2.5M19 9v2.5"/>',
+  chevronLeft: '<path d="m15 5-7 7 7 7"/>',
+  chevronRight: '<path d="m9 5 7 7-7 7"/>',
+  close: '<path d="m5 5 14 14M19 5 5 19"/>',
+  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.3 2.3L16 10"/>',
+  arrowRight: '<path d="M4 12h16M14 6l6 6-6 6"/>',
+
+  // kitchen
+  coffee: '<path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17M7 3.5c0 .8-1 1-1 2s1 1.2 1 2M11 3.5c0 .8-1 1-1 2s1 1.2 1 2"/>',
+  fridge: '<rect x="6" y="2.5" width="12" height="19" rx="1.5"/><path d="M6 9h12M9 4.5v2M9 11.5v2"/>',
+  kettle: '<path d="M5 12a7 7 0 0 1 14 0v1a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-1Z"/><path d="M12 5V3M18 11l3-1M6 20h12"/>',
+  utensils: '<path d="M7 2v8m0 0c-1.7 0-3-1.3-3-3V2m3 8v12M17 2c-1.7 0-3 1.7-3 4.5S15.3 11 17 11m0-9v18"/>',
+  stove: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9.5" r="1.8"/><circle cx="16" cy="9.5" r="1.8"/><circle cx="8" cy="15" r="1.8"/><circle cx="16" cy="15" r="1.8"/>',
+  toaster: '<path d="M4 10a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9H4v-9Z"/><path d="M9 5.5V8M15 5.5V8M8 21l1-2M16 21l-1-2M9 13v3M15 13v3"/>',
+  grill: '<path d="M4 10h16l-1.5 8a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 10Z"/><path d="M7 10V7a5 5 0 0 1 10 0v3M9 13v3M12 13v3M15 13v3"/>',
+  table: '<path d="M3 8h18l-1.5 3H4.5L3 8Z"/><path d="M6 11v9M18 11v9"/>',
+  tree: '<path d="M12 3 7 11h3l-4 6h5v4h2v-4h5l-4-6h3L12 3Z"/>',
+  bottle: '<path d="M10 2h4v3.5l1.5 2.3V20a2 2 0 0 1-2 2h-3a2 2 0 0 1-2-2V7.8L10 5.5V2Z"/><path d="M9 12h6"/>',
+  wine: '<path d="M7 3h10a5 5 0 0 1-5 8 5 5 0 0 1-5-8Z"/><path d="M12 11v7M8.5 21.5h7"/>',
+
+  // bathroom
+  shower: '<path d="M7 3a4 4 0 0 1 4 4v1M4 8h16M6 8v2M10 8v2M14 8v2M18 8v2M7 13v2M12 13v2M17 13v2M7 17v2M12 17v2M17 17v2"/>',
+  hairdryer: '<path d="M6 9a5 5 0 0 1 5-5h4l4 5-4 0a5 5 0 0 1-5 5H8l-2 5-2-1 2-5a4 4 0 0 1 0-4Z"/>',
+  toiletries: '<path d="M9 3h6l1 3H8l1-3Z"/><path d="M7 6h10l1 15H6L7 6Z"/><path d="M9 11h6"/>',
+  toilet: '<path d="M6 4h9v6a4.5 4.5 0 0 1-4.5 4.5A4.5 4.5 0 0 1 6 10V4Z"/><path d="M6.5 14.5h8l1 4a2.5 2.5 0 0 1-2.5 3.5H8a2.5 2.5 0 0 1-2.5-3.5l1-4Z"/>',
+  bath: '<path d="M4 12V6a2 2 0 0 1 3.8-.9M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5v-2Z"/><path d="M7 19l-1 2M17 19l1 2"/>',
+
+  // general
+  wifi: '<path d="M3 9a14 14 0 0 1 18 0M6.2 12.5a9.5 9.5 0 0 1 11.6 0M9.5 16a5 5 0 0 1 5 0"/><circle cx="12" cy="19.5" r="1.2" fill="currentColor" stroke="none"/>',
+  tv: '<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  snowflake: '<path d="M12 2v20M4.5 6l15 12M19.5 6l-15 12M6 3.5 12 8l6-4.5M6 20.5 12 16l6 4.5M2.3 8.7 12 12l-9.7 3.3M21.7 8.7 12 12l9.7 3.3"/>',
+  iron: '<path d="M4 20h13a4 4 0 0 0 4-4c0-3-3-7-8-7H8a5 5 0 0 0-5 5v2a4 4 0 0 0 1 4Z"/><path d="M9 9V6a2 2 0 0 1 2-2h2"/>',
+  sofa: '<path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/><path d="M3 12h18v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5Z"/><path d="M4 18v2M20 18v2M3 12a2 2 0 1 1 4 0M17 12a2 2 0 1 1 4 0"/>',
+  desk: '<path d="M3 8h18M5 8v11M19 8v11M9 8v4M3 15h18"/>',
+  bed: '<path d="M3 19v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6M3 19v2M21 19v2M5 11V7a2 2 0 0 1 2-2h3v6M11 11V5h5a2 2 0 0 1 2 2v4"/>',
+  flame: '<path d="M12 2s5 4.5 5 9.5A5 5 0 0 1 7 11.5c0-1.5.8-2.5 1.3-3.2C8.7 9.6 9 10.5 9.8 11c-.3-3 .7-6.5 2.2-9Z"/>',
+  door: '<rect x="5" y="2.5" width="14" height="19" rx="1"/><circle cx="14.5" cy="12" r="1"/>',
+  volumeOff: '<path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 4 6m0-6-4 6"/>',
+  floor: '<path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z"/>',
+  bug: '<circle cx="12" cy="13" r="5"/><path d="M12 8V5M9 5 7.5 3.5M15 5l1.5-1.5M5 13H2M22 13h-3M6 18l-2 2M18 18l2 2M9 10 6.5 8M15 10l2.5-2"/>',
+  wardrobe: '<rect x="4" y="2.5" width="16" height="19" rx="1"/><path d="M12 2.5v19M9 12v1M15 12v1"/>',
+  hanger: '<path d="M12 3.5a1.5 1.5 0 1 1 1.5 1.5c-.5.4-1.5.7-1.5 1.7v.3M12 7l9 5.5a1.5 1.5 0 0 1-.8 2.8H3.8A1.5 1.5 0 0 1 3 12.5L12 7Z"/><path d="M6 18h12"/>',
+  sofaBed: '<path d="M3 11h18v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6Z"/><path d="M3 11V8a1 1 0 0 1 1-1h4v4M16 7h4a1 1 0 0 1 1 1v3M4 18v2M20 18v2"/>',
+  dryer: '<rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="13" r="4.5"/><path d="M7 6.5h.01M10 6.5h.01"/>',
+  trash: '<path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/>',
+  crib: '<path d="M4 8h16M4 8v10M20 8v10M4 21l2-3M20 21l-2-3M7 8V5.5a2 2 0 0 1 3.6-1.2M7 8v3M17 8v3M11 8v3M14 8v3"/>',
+  plug: '<path d="M8 3v5M14 3v5M6 8h10v3a5 5 0 0 1-5 5 5 5 0 0 1-5-5V8Z"/><path d="M11 16v5"/>',
+  pillow: '<path d="M3 8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8Z"/><path d="M9 9c1 1 1 3 0 4M15 9c-1 1-1 3 0 4"/>',
+  bell: '<path d="M6 10a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M9.5 19a2.5 2.5 0 0 0 5 0"/>',
+  towel: '<path d="M4 3h13v15a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V3Z"/><path d="M17 6h3v11a2 2 0 0 1-2 2h-1M4 9h13M4 13h13"/>',
+  key: '<circle cx="8" cy="15" r="4.5"/><path d="M11.3 11.7 20 3M16 8l2.5 2.5M13 5l2.5 2.5"/>',
+  stairs: '<path d="M4 20h4v-4h4v-4h4V8h4V4"/><path d="M4 20V4h4v4h4v4h4v4h4"/>',
+  building: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h.01M15 7h.01M9 11h.01M15 11h.01M9 15h.01M15 15h.01M10 21v-4h4v4"/>',
+  cleaning: '<path d="M14 3l7 7-1.5 1.5L12 4.5 14 3Z"/><path d="M12.5 5.5 4 14v4h4l8.5-8.5"/><path d="M4 18l-1 3 3-1"/>',
+  handSanitizer: '<path d="M9 2h4v3H9zM8 5h6l1 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8l1-3Z"/><path d="M8 12h6"/>',
+  airPurifier: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+  shield: '<path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3Z"/>',
+  alarm: '<circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M9 3h6M4.5 6 3 4.5M19.5 6 21 4.5"/>',
+  fireExtinguisher: '<path d="M10 2h3v3h-3zM9 5h5l1 2h2v2h-2v11a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V9H7V7h2V5Z"/><path d="M5 10l2 1"/>',
+  gate: '<rect x="3" y="5" width="18" height="15" rx="1"/><path d="M3 5l18 15M21 5 3 20M12 5v15"/>',
+  leaf: '<path d="M4 20c0-9 5-16 16-16 0 11-7 16-16 16Z"/><path d="M4 20c3-5 6-8 12-12"/>',
+  mountain: '<path d="M3 19 9 8l4 6 2-3 6 8H3Z"/><circle cx="17" cy="6" r="2"/>',
+  city: '<path d="M4 21V9l5-4v16M9 21V5l6 3v13M15 21V9l5 3v9M4 21h16"/>',
+  courtyard: '<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M9 4v16M15 4v16M4 9h16M4 15h16"/>',
+  street: '<path d="M9 3 4 21M15 3l5 18M12 6v2M12 11v2M12 16v2"/>',
+};
+
+const inner = paths[name] ?? '<circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/>';
+---
+
+<svg
+  class={`icon ${className}`}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.75"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={inner}
+/>
+
+<style>
+  .icon {
+    width: 1.35em;
+    height: 1.35em;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+import { localePath, useTranslations } from '../i18n/utils';
+import { SITE } from '../data/site';
+import type { Locale } from '../i18n/locales';
+import Icon from './Icon.astro';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props as Props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="brand-name">{t('site.name')}</span>
+      <p>{t('footer.tagline')}</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="Footer">
+      <a href={localePath(locale)}>{t('nav.home')}</a>
+      <a href={localePath(locale, 'apartments')}>{t('nav.apartments')}</a>
+      <a href={localePath(locale, 'contact')}>{t('nav.contact')}</a>
+    </nav>
+
+    <div class="footer-contact">
+      <a href={SITE.telHref}><Icon name="phone" /> {SITE.phoneDisplay}</a>
+      <a href={SITE.whatsappHref} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>
+      <a href={SITE.mapsShareUrl} target="_blank" rel="noopener"><Icon name="mapPin" /> {t('map.openInMaps')}</a>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {year} {t('site.name')}. {t('footer.rights')}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-ink);
+    color: #efe8dd;
+    padding-block: 3.5rem 1.5rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+  }
+
+  .footer-brand .brand-name {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .footer-brand p {
+    color: #c9bfae;
+    margin-top: 0.5rem;
+  }
+
+  .footer-nav,
+  .footer-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .footer-nav a,
+  .footer-contact a {
+    color: #d9d0c1;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+  }
+
+  .footer-nav a:hover,
+  .footer-contact a:hover {
+    color: #fff;
+  }
+
+  .footer-bottom {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .footer-bottom p {
+    margin: 0;
+    color: #a89d8b;
+    font-size: 0.85rem;
+  }
+
+  @media (min-width: 700px) {
+    .footer-grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+</style>
