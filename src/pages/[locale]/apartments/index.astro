@@ -4,6 +4,7 @@ import ApartmentCard from '../../../components/ApartmentCard.astro';
 import { LOCALES, type Locale } from '../../../i18n/locales';
 import { useTranslations } from '../../../i18n/utils';
 import { APARTMENTS } from '../../../data/apartments';
+import { PAGE_META } from '../../../data/seo';
 
 export function getStaticPaths() {
   return LOCALES.map((locale) => ({ params: { locale }, props: { locale } }));
@@ -15,8 +16,8 @@ const t = useTranslations(locale);
 
 <BaseLayout
   locale={locale}
-  title={t('apartments.sectionTitle')}
-  description={t('apartments.sectionSubtitle')}
+  title={PAGE_META.apartmentsIndex[locale].title}
+  description={PAGE_META.apartmentsIndex[locale].description}
   path={['apartments']}
 >
   <section class="section">
@@ -28,7 +29,7 @@ const t = useTranslations(locale);
       </div>
       <div class="apartments-grid">
         {APARTMENTS.map((apartment, i) => (
-          <ApartmentCard apartment={apartment} locale={locale} priority={i < 3} />
+          <ApartmentCard apartment={apartment} locale={locale} priority={i < 3} headingLevel="h2" />
         ))}
       </div>
     </div>

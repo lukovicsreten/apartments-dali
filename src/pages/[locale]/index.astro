@@ -7,7 +7,11 @@ import Icon from '../../components/Icon.astro';
 import { LOCALES, type Locale } from '../../i18n/locales';
 import { useTranslations, localePath } from '../../i18n/utils';
 import { APARTMENTS } from '../../data/apartments';
+import { getApartmentImages } from '../../data/images';
 import { SITE, whatsappHrefWithMessage } from '../../data/site';
+import { PAGE_META } from '../../data/seo';
+import { lodgingBusinessSchema, resolveImageUrls } from '../../lib/jsonld';
+import StructuredData from '../../components/StructuredData.astro';
 import heroImage from '../../assets/hero/budva.jpg';
 
 export function getStaticPaths() {
@@ -22,19 +26,36 @@ const whatsappMessage: Record<Locale, string> = {
   en: 'Hi! I would like to ask about a stay at Apartments Dali.',
   de: 'Hallo! Ich interessiere mich für einen Aufenthalt bei Apartments Dali.',
 };
+
+const heroAlt: Record<Locale, string> = {
+  sr: 'Panorama Starog grada Budve i tvrđave Sveti Nikola, Crna Gora',
+  en: 'Panoramic view of Budva Old Town and St. Nicholas fortress, Montenegro',
+  de: 'Panoramablick auf die Altstadt von Budva und die Festung Sveti Nikola, Montenegro',
+};
+
+const site = Astro.site ?? new URL('https://apartmentsdali.com');
+const businessImages = await resolveImageUrls(
+  [heroImage, ...getApartmentImages('garden-view-apartment').slice(0, 1), ...getApartmentImages('studio-with-terrace').slice(0, 1)],
+  site
+);
+const businessSchema = lodgingBusinessSchema({ site, locale, images: businessImages });
 ---
 
 <BaseLayout
   locale={locale}
-  title={t('hero.title')}
-  description={t('meta.defaultDescription')}
+  title={PAGE_META.home[locale].title}
+  description={PAGE_META.home[locale].description}
   path={[]}
 >
+  <Fragment slot="head">
+    <StructuredData data={businessSchema} />
+  </Fragment>
+
   <section class="hero">
     {heroImage && (
       <Image
         src={heroImage}
-        alt={t('hero.title')}
+        alt={heroAlt[locale]}
         width={1920}
         height={671}
         widths={[640, 960, 1280, 1920, 2560]}
@@ -92,6 +113,21 @@ const whatsappMessage: Record<Locale, string> = {
           <ApartmentCard apartment={apartment} locale={locale} priority={i < 2} />
         ))}
       </div>
+    </div>
+  </section>
+
+  <section class="section destination">
+    <div class="container destination-grid">
+      <div>
+        <p class="eyebrow">Montenegro</p>
+        <h2>{t('destination.title')}</h2>
+        <p>{t('destination.body')}</p>
+      </div>
+      <ul class="destination-highlights">
+        <li><Icon name="city" /><span>{locale === 'sr' ? 'Stari grad Budve' : locale === 'de' ? 'Altstadt von Budva' : 'Budva Old Town'}</span></li>
+        <li><Icon name="beach" /><span>{locale === 'sr' ? 'Peščane plaže' : locale === 'de' ? 'Sandstrände' : 'Sandy beaches'}</span></li>
+        <li><Icon name="mountain" /><span>{locale === 'sr' ? 'Crnogorska rivijera' : locale === 'de' ? 'Montenegrinische Riviera' : 'Montenegrin riviera'}</span></li>
+      </ul>
     </div>
   </section>
 
@@ -221,6 +257,33 @@ const whatsappMessage: Record<Locale, string> = {
     gap: 1.75rem;
   }
 
+  .destination-grid {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .destination-highlights {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .destination-highlights li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.1rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+
+  .destination-highlights :global(svg) {
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
   .map-section {
     display: grid;
     gap: 2rem;
@@ -240,6 +303,10 @@ const whatsappMessage: Record<Locale, string> = {
 
   @media (min-width: 900px) {
     .intro-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .destination-grid {
       grid-template-columns: 1.1fr 0.9fr;
     }
 

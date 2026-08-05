@@ -20,7 +20,11 @@ export const ui = {
 
     'intro.title': 'Dobrodošli u Apartments Dali',
     'intro.body':
-      'U samom srcu mirnog i zelenog okruženja nalazi se šest pažljivo uređenih apartmana i studija — savršenih za porodični odmor, romantičan bekstvo ili poslovni boravak. Svaka jedinica ima sopstveni ulaz, potpuno opremljenu kuhinju i sve što je potrebno da se osećate kao kod kuće.',
+      'U Budvi, na crnogorskom primorju, nalazi se šest pažljivo uređenih apartmana i studija — savršenih za porodični odmor, romantičan bekstvo ili poslovni boravak, nadomak Starog grada i plaža. Svaka jedinica ima sopstveni ulaz, potpuno opremljenu kuhinju i sve što je potrebno da se osećate kao kod kuće.',
+
+    'destination.title': 'Budva i okolina',
+    'destination.body':
+      'Budva je jedno od najpoznatijih letovališta crnogorskog primorja, poznato po srednjovekovnom Starom gradu, peščanim plažama i živopisnoj rivijeri. Bilo da istražujete uske uličice tvrđave, uživate na plaži ili isprobavate lokalnu kuhinju, Budva nudi odličnu polaznu tačku za vaš odmor.',
 
     'apartments.sectionTitle': 'Naši apartmani',
     'apartments.sectionSubtitle':
@@ -91,7 +95,11 @@ export const ui = {
 
     'intro.title': 'Welcome to Apartments Dali',
     'intro.body':
-      'Set in a quiet, green surrounding, Apartments Dali offers six thoughtfully furnished apartments and studios — perfect for a family holiday, a romantic getaway or a business stay. Every unit has its own entrance, a fully equipped kitchen and everything you need to feel at home.',
+      'Set in Budva, on the Montenegrin coast, Apartments Dali offers six thoughtfully furnished apartments and studios — perfect for a family holiday, a romantic getaway or a business stay, just a short reach from the Old Town and the beaches. Every unit has its own entrance, a fully equipped kitchen and everything you need to feel at home.',
+
+    'destination.title': 'Budva & the surrounding area',
+    'destination.body':
+      "Budva is one of the best-known resorts on the Montenegrin coast, famed for its medieval Old Town, sandy beaches and lively riviera. Whether you're exploring the fortress's narrow streets, relaxing on the beach or sampling local cuisine, Budva makes a great base for your holiday.",
 
     'apartments.sectionTitle': 'Our apartments',
     'apartments.sectionSubtitle':
@@ -162,7 +170,11 @@ export const ui = {
 
     'intro.title': 'Willkommen bei Apartments Dali',
     'intro.body':
-      'Inmitten einer ruhigen, grünen Umgebung bietet Apartments Dali sechs liebevoll eingerichtete Apartments und Studios — ideal für den Familienurlaub, einen romantischen Kurztrip oder eine Geschäftsreise. Jede Einheit verfügt über einen eigenen Eingang, eine voll ausgestattete Küche und alles, was Sie für ein Zuhause auf Zeit brauchen.',
+      'In Budva an der montenegrinischen Küste bietet Apartments Dali sechs liebevoll eingerichtete Apartments und Studios — ideal für den Familienurlaub, einen romantischen Kurztrip oder eine Geschäftsreise, nur einen kurzen Weg von der Altstadt und den Stränden entfernt. Jede Einheit verfügt über einen eigenen Eingang, eine voll ausgestattete Küche und alles, was Sie für ein Zuhause auf Zeit brauchen.',
+
+    'destination.title': 'Budva und Umgebung',
+    'destination.body':
+      'Budva ist einer der bekanntesten Ferienorte an der montenegrinischen Küste und berühmt für seine mittelalterliche Altstadt, Sandstrände und die lebendige Riviera. Ob beim Erkunden der engen Gassen der Festung, beim Entspannen am Strand oder beim Probieren der lokalen Küche — Budva ist ein hervorragender Ausgangspunkt für Ihren Urlaub.',
 
     'apartments.sectionTitle': 'Unsere Apartments',
     'apartments.sectionSubtitle':

@@ -9,6 +9,9 @@ import { APARTMENTS, type Apartment } from '../../../data/apartments';
 import { getApartmentImages } from '../../../data/images';
 import { FEATURES, VIEWS, type FeatureCategory } from '../../../data/features';
 import { SITE, whatsappHrefWithMessage } from '../../../data/site';
+import { PAGE_META, apartmentMeta } from '../../../data/seo';
+import { apartmentSchema, breadcrumbSchema, resolveImageUrls } from '../../../lib/jsonld';
+import StructuredData from '../../../components/StructuredData.astro';
 
 export function getStaticPaths() {
   return LOCALES.flatMap((locale) =>
@@ -25,6 +28,18 @@ const t = useTranslations(locale);
 const images = getApartmentImages(apartment.slug);
 const otherApartments = APARTMENTS.filter((a) => a.slug !== apartment.slug).slice(0, 3);
 const guestsLabel = apartment.capacity === 1 ? t('apartments.guest_one') : t('apartments.guests');
+const meta = apartmentMeta(apartment, locale);
+
+const site = Astro.site ?? new URL('https://apartmentsdali.com');
+const pagePath = localePath(locale, 'apartments', apartment.slug);
+const pageUrl = new URL(pagePath, site).toString();
+const schemaImages = await resolveImageUrls(images, site);
+const apartmentJsonLd = apartmentSchema({ apartment, locale, images: schemaImages, url: pageUrl, site });
+const breadcrumbJsonLd = breadcrumbSchema([
+  { name: t('nav.home'), url: new URL(localePath(locale), site).toString() },
+  { name: t('nav.apartments'), url: new URL(localePath(locale, 'apartments'), site).toString() },
+  { name: apartment.name[locale], url: pageUrl },
+]);
 
 const categories: { key: FeatureCategory; icon: string }[] = [
   { key: 'kitchen', icon: 'kitchen' },
@@ -42,11 +57,15 @@ const whatsappMessage: Record<Locale, string> = {
 
 <BaseLayout
   locale={locale}
-  title={apartment.name[locale]}
-  description={apartment.description[locale]}
+  title={meta.title}
+  description={meta.description}
   path={['apartments', apartment.slug]}
   image={images[0]}
 >
+  <Fragment slot="head">
+    <StructuredData data={[apartmentJsonLd, breadcrumbJsonLd]} />
+  </Fragment>
+
   <nav class="crumbs container">
     <a href={localePath(locale, 'apartments')}>
       <Icon name="chevronLeft" /> {t('detail.backToApartments')}

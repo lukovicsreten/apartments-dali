@@ -18,5 +18,19 @@ export default defineConfig({
     // Larger source photos still get responsive, optimized WebP output at build time.
     responsiveStyles: true,
   },
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      // "/" only 301-redirects to "/sr/" (see src/pages/index.astro) — excluding it
+      // avoids a duplicate, confusing hreflang="sr-RS" entry alongside the real "/sr/".
+      filter: (page) => new URL(page).pathname !== '/',
+      i18n: {
+        defaultLocale: 'sr',
+        locales: {
+          sr: 'sr-RS',
+          en: 'en-US',
+          de: 'de-DE',
+        },
+      },
+    }),
+  ],
 });

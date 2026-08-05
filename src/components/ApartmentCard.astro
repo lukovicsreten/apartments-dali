@@ -10,8 +10,11 @@ interface Props {
   apartment: Apartment;
   locale: Locale;
   priority?: boolean;
+  /** Card title heading level — pick whatever keeps the page's H1→H2→H3 order unbroken. */
+  headingLevel?: 'h2' | 'h3';
 }
-const { apartment, locale, priority = false } = Astro.props as Props;
+const { apartment, locale, priority = false, headingLevel = 'h3' } = Astro.props as Props;
+const Heading = headingLevel;
 const t = useTranslations(locale);
 const cover = getApartmentImages(apartment.slug)[0];
 const guestsLabel = apartment.capacity === 1 ? t('apartments.guest_one') : t('apartments.guests');
@@ -22,7 +25,7 @@ const guestsLabel = apartment.capacity === 1 ? t('apartments.guest_one') : t('ap
     {cover && (
       <Image
         src={cover}
-        alt={apartment.name[locale]}
+        alt={`${apartment.name[locale]} — Apartments Dali, Budva`}
         width={640}
         height={440}
         widths={[320, 480, 640, 960]}
@@ -40,7 +43,7 @@ const guestsLabel = apartment.capacity === 1 ? t('apartments.guest_one') : t('ap
     )}
   </a>
   <div class="card-body">
-    <h3><a href={localePath(locale, 'apartments', apartment.slug)}>{apartment.name[locale]}</a></h3>
+    <Heading><a href={localePath(locale, 'apartments', apartment.slug)}>{apartment.name[locale]}</a></Heading>
     <p class="card-desc">{apartment.description[locale]}</p>
     <div class="card-meta">
       <span><Icon name="users" /> {apartment.capacity} {guestsLabel}</span>
@@ -111,11 +114,13 @@ const guestsLabel = apartment.capacity === 1 ? t('apartments.guest_one') : t('ap
     flex: 1;
   }
 
+  .card-body h2,
   .card-body h3 {
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
   }
 
+  .card-body h2 a:hover,
   .card-body h3 a:hover {
     color: var(--color-primary);
   }

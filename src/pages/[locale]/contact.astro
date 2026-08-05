@@ -5,6 +5,7 @@ import Icon from '../../components/Icon.astro';
 import { LOCALES, type Locale } from '../../i18n/locales';
 import { useTranslations } from '../../i18n/utils';
 import { SITE } from '../../data/site';
+import { PAGE_META } from '../../data/seo';
 
 export function getStaticPaths() {
   return LOCALES.map((locale) => ({ params: { locale }, props: { locale } }));
@@ -22,8 +23,8 @@ const namePlaceholder: Record<Locale, string> = {
 
 <BaseLayout
   locale={locale}
-  title={t('contact.title')}
-  description={t('contact.subtitle')}
+  title={PAGE_META.contact[locale].title}
+  description={PAGE_META.contact[locale].description}
   path={['contact']}
 >
   <section class="section contact-section">
